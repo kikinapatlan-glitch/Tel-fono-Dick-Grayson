@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samsung de Dick Grayson</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #1a1a2e; display: flex; justify-content: center; padding: 40px 20px 60px; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+/* =============================================
+   CARCASA DEL TELÉFONO
+   Cambia los colores en :root para otro personaje
+   ============================================= */
+:root {
+  --accent: #1a6cff;          /* Color principal (burbujas enviadas, botones) */
+  --accent2: #00c4ff;
+  --wallpaper-1: #0d1b3e;     /* Color wallpaper home (gradiente inicio) */
+  --wallpaper-2: #1a3a6e;     /* Color wallpaper home (gradiente medio) */
+  --wallpaper-3: #0f2855;     /* Color wallpaper home (gradiente fin) */
+  --lock-1: #0a1628;          /* Color lockscreen (gradiente inicio) */
+  --lock-2: #0e2040;
+  --lock-3: #1a3060;
+  --font: 'Segoe UI', system-ui, sans-serif;
+}
+
+.wrap { display: flex; justify-content: center; align-items: flex-start; }
+
+.phone {
+  width: 320px;
+  background: #1a1a1e;
+  border-radius: 44px;
+  padding: 10px;
+  box-shadow: 0 0 0 1px #333, 0 30px 60px rgba(0,0,0,0.5), inset 0 0 0 1px #444;
+  position: relative;
+}
+
+/* Botones laterales */
+.phone::before { content:''; position:absolute; left:-3px; top:120px; width:3px; height:34px; background:#2a2a2e; border-radius:2px 0 0 2px; }
+.phone::after  { content:''; position:absolute; left:-3px; top:166px; width:3px; height:60px; background:#2a2a2e; border-radius:2px 0 0 2px; }
+.vol-btn { position:absolute; right:-3px; top:148px; width:3px; height:72px; background:#2a2a2e; border-radius:0 2px 2px 0; }
+
+.screen {
+  width: 100%;
+  background: #000;
+  border-radius: 36px;
+  overflow: hidden;
+  position: relative;
+  height: 620px;
+}
+
+/* =============================================
+   PANTALLA DE BLOQUEO
+   ============================================= */
+.lockscreen {
+  position: absolute; inset: 0; z-index: 200;
+  background: linear-gradient(160deg, var(--lock-1) 0%, var(--lock-2) 40%, var(--lock-3) 100%);
+  display: flex; flex-direction: column;
+  cursor: pointer;
+  transition: opacity 0.4s ease;
+}
+.lockscreen.hidden { opacity: 0; pointer-events: none; }
+
+.punch-row { display:flex; justify-content:center; padding:14px 0 2px; }
+.punch-hole { width:12px; height:12px; background:#000; border-radius:50%; }
+
+.lock-status {
+  display:flex; justify-content:space-between; align-items:center;
+  padding: 4px 18px; font-size:11px; color:rgba(255,255,255,0.85);
+}
+.sig-bars { display:flex; gap:1px; align-items:flex-end; }
+.sig-bar { width:3px; background:white; border-radius:1px; }
+.status-right { display:flex; gap:5px; align-items:center; font-size:10px; }
+
+.lock-time-area { text-align:center; padding:28px 0 16px; }
+.lock-time { font-size:64px; font-weight:200; color:white; letter-spacing:-3px; line-height:1; }
+.lock-date { font-size:14px; color:rgba(255,255,255,0.7); margin-top:6px; }
+
+.lock-notifs { padding:0 14px; display:flex; flex-direction:column; gap:8px; overflow:hidden; }
+.notif-pill {
+  background: rgba(255,255,255,0.12);
+  border-radius: 16px; padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.notif-app-row { font-size:10px; color:rgba(255,255,255,0.6); margin-bottom:3px; display:flex; align-items:center; gap:5px; }
+.notif-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+.notif-title { font-size:13px; color:white; font-weight:500; }
+.notif-body  { font-size:11px; color:rgba(255,255,255,0.6); margin-top:1px; }
+
+.lock-footer { margin-top:auto; text-align:center; padding-bottom:22px; }
+.lock-hint { font-size:11px; color:rgba(255,255,255,0.4); letter-spacing:0.5px; margin-bottom:8px; }
+.home-indicator { width:100px; height:4px; background:rgba(255,255,255,0.3); border-radius:2px; margin:0 auto; }
+
+/* =============================================
+   HOME SCREEN
+   ============================================= */
+.homescreen { position:absolute; inset:0; z-index:10; display:flex; flex-direction:column; overflow:hidden; }
+.home-bg {
+  position:absolute; inset:0;
+  background: linear-gradient(135deg, var(--wallpaper-1) 0%, var(--wallpaper-2) 50%, var(--wallpaper-3) 100%);
+}
+.home-bg::after {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse at 30% 70%, rgba(0,196,255,0.15) 0%, transparent 60%);
+}
+
+.home-punch-row { display:flex; justify-content:center; padding:14px 0 2px; position:relative; z-index:2; }
+.home-status {
+  position:relative; z-index:2;
+  display:flex; justify-content:space-between; align-items:center;
+  padding: 2px 20px 6px; font-size:11px; color:white;
+}
+
+.app-grid {
+  position:relative; z-index:2;
+  display:grid; grid-template-columns: repeat(4, 1fr);
+  gap:18px 8px; padding:16px 16px 10px;
+  flex:1;
+}
+.app-item { display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; }
+.app-icon {
+  width:54px; height:54px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; position:relative; overflow:visible;
+}
+.badge {
+  position:absolute; top:-4px; right:-4px;
+  background:#ff3b30; color:white; font-size:9px; font-weight:700;
+  min-width:16px; height:16px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  padding:0 3px; border:2px solid var(--wallpaper-1);
+}
+.app-label { font-size:10px; color:white; text-align:center; text-shadow:0 1px 4px rgba(0,0,0,0.8); line-height:1.2; }
+
+.dock {
+  position:relative; z-index:2;
+  background: rgba(255,255,255,0.12);
+  margin: 0 16px 10px; border-radius:22px;
+  padding:10px 8px;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
+  border:1px solid rgba(255,255,255,0.08);
+}
+.dock .app-item .app-icon { width:48px; height:48px; }
+
+.home-bar-row { position:relative; z-index:2; display:flex; justify-content:center; padding-bottom:10px; }
+.home-bar { width:100px; height:4px; background:rgba(255,255,255,0.35); border-radius:2px; }
+
+/* =============================================
+   PANTALLAS DE APPS (base)
+   ============================================= */
+.app-screen {
+  position:absolute; inset:0; z-index:100;
+  display:flex; flex-direction:column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+  pointer-events:none;
+}
+.app-screen.active { transform:translateX(0); pointer-events:all; }
+
+.back-btn {
+  position:absolute; top:48px; left:14px; z-index:110;
+  color:var(--accent); font-size:14px; cursor:pointer;
+  display:flex; align-items:center; gap:3px;
+  background:none; border:none; font-family:var(--font);
+}
+.back-btn.white { color:white; text-shadow:0 1px 3px rgba(0,0,0,0.7); }
+
+/* =============================================
+   MENSAJES SAMSUNG
+   ============================================= */
+.samsung-messages { background:white; }
+.msg-header { background:white; padding:50px 16px 10px; border-bottom:1px solid #eee; }
+.msg-header h2 { font-size:22px; font-weight:700; color:#111; }
+.msg-search { margin-top:8px; background:#f0f0f0; border-radius:10px; padding:8px 12px; font-size:13px; color:#999; }
+.msg-list { overflow-y:auto; flex:1; }
+.msg-row {
+  display:flex; align-items:center; padding:12px 16px;
+  border-bottom:1px solid #f8f8f8; cursor:pointer;
+}
+.msg-row:hover { background:#fafafa; }
+.msg-avatar {
+  width:46px; height:46px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:15px; font-weight:700; flex-shrink:0;
+  margin-right:12px; color:white;
+}
+.msg-info { flex:1; overflow:hidden; }
+.msg-name { font-size:15px; font-weight:600; color:#111; }
+.msg-preview { font-size:13px; color:#999; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+.msg-meta { text-align:right; flex-shrink:0; }
+.msg-time { font-size:11px; color:#aaa; }
+.unread-dot { width:8px; height:8px; background:var(--accent); border-radius:50%; margin:4px 0 0 auto; }
+
+/* =============================================
+   PANTALLA DE CHAT INDIVIDUAL
+   ============================================= */
+.chat-screen { background:#f5f5f5; }
+.chat-header {
+  background:white; padding:46px 16px 12px;
+  display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid #eee;
+}
+.chat-back { color:var(--accent); cursor:pointer; font-size:20px; flex-shrink:0; }
+.chat-avatar-sm { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:13px; flex-shrink:0; }
+.chat-name { font-size:16px; font-weight:600; color:#111; }
+.chat-status-text { font-size:11px; color:#aaa; }
+
+.chat-msgs { flex:1; overflow-y:auto; padding:14px 12px; display:flex; flex-direction:column; gap:5px; }
+.bubble { padding:9px 13px; border-radius:18px; font-size:13px; max-width:78%; line-height:1.4; }
+.b-in { background:white; color:#111; border-bottom-left-radius:4px; align-self:flex-start; box-shadow:0 1px 2px rgba(0,0,0,0.07); }
+.b-out { background:var(--accent); color:white; border-bottom-right-radius:4px; align-self:flex-end; }
+.b-time { font-size:10px; color:#bbb; padding:0 4px; }
+.b-time.right { align-self:flex-end; }
+.b-time.left  { align-self:flex-start; }
+
+.chat-input-bar {
+  background:white; padding:8px 12px;
+  display:flex; align-items:center; gap:8px;
+  border-top:1px solid #eee;
+}
+.chat-input-fake { flex:1; background:#f0f0f0; border-radius:20px; padding:8px 14px; font-size:13px; color:#bbb; }
+.send-btn { width:34px; height:34px; background:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:13px; flex-shrink:0; }
+
+/* =============================================
+   INSTAGRAM
+   ============================================= */
+.instagram-app { background:white; overflow:hidden; }
+.ig-header { padding:46px 16px 10px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #dbdbdb; }
+.ig-logo { font-size:20px; font-weight:700; font-style:italic; font-family:Georgia,serif; }
+.ig-actions { display:flex; gap:16px; font-size:20px; }
+.ig-stories { display:flex; gap:14px; padding:12px 16px; overflow-x:auto; border-bottom:1px solid #dbdbdb; flex-shrink:0; }
+.story-wrap { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; flex-shrink:0; }
+.story-ring { width:58px; height:58px; border-radius:50%; padding:2.5px; background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }
+.story-ring.seen { background:#ccc; }
+.story-avatar-circle { width:100%; height:100%; border-radius:50%; border:2.5px solid white; display:flex; align-items:center; justify-content:center; font-size:20px; background:#e8e8e8; }
+.story-label { font-size:10px; color:#111; max-width:62px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ig-scroll { overflow-y:auto; flex:1; }
+.ig-post { border-bottom:1px solid #dbdbdb; }
+.ig-post-header { display:flex; align-items:center; padding:10px 12px; gap:10px; }
+.ig-post-ph { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:12px; flex-shrink:0; }
+.ig-post-img { width:100%; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; font-size:42px; }
+.ig-post-actions { display:flex; gap:14px; padding:10px 12px 4px; font-size:20px; }
+.ig-caption { padding:0 12px 12px; font-size:13px; line-height:1.4; }
+.ig-likes { padding:0 12px 4px; font-size:12px; font-weight:600; color:#111; }
+
+/* =============================================
+   SPOTIFY
+   ============================================= */
+.spotify-app { background:#121212; color:white; overflow:hidden; }
+.sp-topbar { padding:48px 16px 14px; display:flex; justify-content:space-between; align-items:center; }
+.sp-topbar h2 { font-size:20px; font-weight:700; }
+.sp-now {
+  background:#282828; border-radius:12px;
+  padding:14px; display:flex; align-items:center;
+  gap:12px; margin:0 16px 16px; cursor:pointer;
+}
+.sp-now-art { width:52px; height:52px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.sp-now-title { font-size:14px; font-weight:600; color:white; }
+.sp-now-artist { font-size:12px; color:#b3b3b3; margin-top:2px; }
+.sp-play { width:32px; height:32px; background:#1db954; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+.sp-scroll { overflow-y:auto; flex:1; }
+.sp-section { padding:0 16px 14px; }
+.sp-section h3 { font-size:15px; font-weight:700; margin-bottom:12px; }
+.sp-row { display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid #1e1e1e; }
+.sp-art-sm { width:44px; height:44px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.sp-row-title { font-size:14px; color:white; }
+.sp-row-sub { font-size:12px; color:#b3b3b3; margin-top:1px; }
+
+/* =============================================
+   SAMSUNG INTERNET
+   ============================================= */
+.internet-app { background:white; }
+.inet-topbar { background:#f8f8f8; padding:46px 16px 12px; border-bottom:1px solid #e8e8e8; }
+.inet-brand { font-size:15px; font-weight:700; color:var(--accent); margin-bottom:8px; }
+.inet-bar { background:white; border:1px solid #e0e0e0; border-radius:20px; padding:8px 14px; font-size:13px; color:#999; display:flex; align-items:center; gap:8px; }
+.inet-scroll { overflow-y:auto; flex:1; }
+.inet-section-label { padding:12px 16px 4px; font-size:11px; color:#aaa; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+.hist-row { display:flex; align-items:center; padding:10px 16px; gap:12px; border-bottom:1px solid #f8f8f8; }
+.hist-favicon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0; }
+.hist-text { flex:1; overflow:hidden; }
+.hist-title { font-size:13px; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.hist-url   { font-size:11px; color:#aaa; margin-top:1px; }
+.hist-time  { font-size:11px; color:#ccc; flex-shrink:0; }
+
+/* =============================================
+   GALERÍA
+   ============================================= */
+.gallery-app { background:#000; }
+.gal-topbar { background:#111; padding:46px 16px 12px; border-bottom:1px solid #222; }
+.gal-topbar h2 { font-size:22px; font-weight:700; color:white; }
+.gal-tabs { display:flex; gap:20px; margin-top:10px; }
+.gal-tab { font-size:13px; color:#666; padding-bottom:6px; cursor:pointer; }
+.gal-tab.active { color:var(--accent); border-bottom:2px solid var(--accent); }
+.gal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; overflow-y:auto; flex:1; }
+.gal-cell { aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; font-size:26px; position:relative; cursor:pointer; }
+.gal-label { position:absolute; bottom:4px; left:4px; right:4px; font-size:9px; color:rgba(255,255,255,0.9); text-shadow:0 1px 3px rgba(0,0,0,0.9); line-height:1.2; }
+
+/* =============================================
+   LIFE360
+   ============================================= */
+.life360-app { background:white; }
+.l360-topbar { background:var(--accent); padding:46px 16px 16px; }
+.l360-topbar h2 { font-size:20px; font-weight:700; color:white; }
+.l360-topbar p  { font-size:12px; color:rgba(255,255,255,0.75); margin-top:2px; }
+.l360-map { height:200px; background:#e8f0e8; position:relative; overflow:hidden; flex-shrink:0; }
+.map-grid {
+  position:absolute; inset:0;
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 29px,#d4e4d4 29px,#d4e4d4 30px),
+    repeating-linear-gradient(90deg,transparent,transparent 29px,#d4e4d4 29px,#d4e4d4 30px);
+}
+.l360-pin { position:absolute; display:flex; flex-direction:column; align-items:center; }
+.pin-avatar { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:13px; border:2.5px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+.pin-name { font-size:9px; font-weight:700; background:white; padding:1px 5px; border-radius:6px; margin-top:2px; color:#111; box-shadow:0 1px 4px rgba(0,0,0,0.15); }
+.l360-list { overflow-y:auto; flex:1; padding:0 16px; }
+.l360-row { display:flex; align-items:center; padding:10px 0; border-bottom:1px solid #f5f5f5; gap:12px; }
+.l360-avatar { width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:15px; flex-shrink:0; }
+.l360-name { font-size:15px; font-weight:600; color:#111; }
+.l360-loc  { font-size:12px; color:#888; margin-top:1px; }
+.l360-time { font-size:11px; color:#bbb; }
+.status-dot { width:8px; height:8px; border-radius:50%; }
+
+/* =============================================
+   GMAIL
+   ============================================= */
+.gmail-app { background:white; }
+.gm-topbar { padding:46px 16px 10px; display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid #f0f0f0; }
+.gm-topbar h2 { font-size:22px; font-weight:700; color:#111; }
+.gm-label { font-size:12px; color:#999; margin-top:2px; }
+.gm-scroll { overflow-y:auto; flex:1; }
+.gm-row { display:flex; align-items:flex-start; padding:12px 16px; border-bottom:1px solid #f8f8f8; gap:12px; cursor:pointer; }
+.gm-row:hover { background:#fafafa; }
+.gm-avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; font-weight:700; flex-shrink:0; }
+.gm-info { flex:1; overflow:hidden; }
+.gm-sender { font-size:14px; font-weight:700; color:#111; }
+.gm-sender.read { font-weight:400; color:#888; }
+.gm-subject { font-size:13px; color:#333; margin-top:1px; }
+.gm-snippet { font-size:12px; color:#aaa; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.gm-time { font-size:11px; color:#aaa; flex-shrink:0; }
+
+/* =============================================
+   COMENTARIO-GUÍA PARA PERSONALIZACIÓN
+   Busca los comentarios <!-- PERSONALIZAR: ... -->
+   ============================================= */
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="phone">
+  <div class="vol-btn"></div>
+  <div class="screen">
+
+    <!-- ==========================================
+         LOCKSCREEN
+         PERSONALIZAR: hora, fecha, notificaciones
+         ========================================== -->
+    <div class="lockscreen" id="lockscreen" onclick="unlockPhone()">
+      <div class="punch-row"><div class="punch-hole"></div></div>
+      <div class="lock-status">
+        <span>9:41</span><!-- PERSONALIZAR: hora -->
+        <div class="status-right">
+          <div class="sig-bars">
+            <div class="sig-bar" style="height:4px"></div>
+            <div class="sig-bar" style="height:6px"></div>
+            <div class="sig-bar" style="height:9px"></div>
+            <div class="sig-bar" style="height:11px"></div>
+          </div>
+          <span>WiFi</span>
+          <span>🔋87%</span><!-- PERSONALIZAR: batería -->
+        </div>
+      </div>
+      <div class="lock-time-area">
+        <div class="lock-time">9:41</div><!-- PERSONALIZAR: hora grande -->
+        <div class="lock-date">Viernes, 23 de agosto</div><!-- PERSONALIZAR: fecha -->
+      </div>
+      <div class="lock-notifs">
+        <!-- PERSONALIZAR: notificaciones de bloqueo - copia este bloque para añadir más -->
+        <div class="notif-pill">
+          <div class="notif-app-row"><span class="notif-dot" style="background:#25d366"></span>Mensajes</div>
+          <div class="notif-title">Bruce Wayne</div>
+          <div class="notif-body">Necesito que estés en Gotham esta noche.</div>
+        </div>
+        <div class="notif-pill">
+          <div class="notif-app-row"><span class="notif-dot" style="background:#e1306c"></span>Instagram</div>
+          <div class="notif-title">nightwiiing y 47 más les gustó tu foto</div>
+        </div>
+        <div class="notif-pill">
+          <div class="notif-app-row"><span class="notif-dot" style="background:#1a6cff"></span>Life360</div>
+          <div class="notif-title">Jason Todd salió de la zona segura</div>
+          <div class="notif-body">hace 12 minutos · Blüdhaven East</div>
+        </div>
+      </div>
+      <div class="lock-footer">
+        <div class="lock-hint">toca para desbloquear</div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         HOME SCREEN
+         ========================================== -->
+    <div class="homescreen">
+      <div class="home-bg"></div>
+      <div class="home-punch-row"><div class="punch-hole" style="background:#111"></div></div>
+      <div class="home-status">
+        <span>9:41</span>
+        <div class="status-right" style="color:white">
+          <div class="sig-bars"><div class="sig-bar" style="height:4px;opacity:0.5"></div><div class="sig-bar" style="height:6px;opacity:0.7"></div><div class="sig-bar" style="height:9px"></div><div class="sig-bar" style="height:11px"></div></div>
+          <span style="font-size:10px">87%</span>
+        </div>
+      </div>
+      <div class="app-grid">
+        <!-- PERSONALIZAR: añade/quita apps del grid. Cada .app-item es un ícono -->
+        <div class="app-item" onclick="openApp('messages')">
+          <div class="app-icon" style="background:#25d366">💬<span class="badge">12</span></div>
+          <span class="app-label">Mensajes</span>
+        </div>
+        <div class="app-item" onclick="openApp('instagram')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#f09433,#dc2743,#bc1888)">📷<span class="badge">47</span></div>
+          <span class="app-label">Instagram</span>
+        </div>
+        <div class="app-item" onclick="openApp('spotify')">
+          <div class="app-icon" style="background:#1db954">🎵</div>
+          <span class="app-label">Spotify</span>
+        </div>
+        <div class="app-item" onclick="openApp('internet')">
+          <div class="app-icon" style="background:var(--accent)">🌐</div>
+          <span class="app-label">Internet</span>
+        </div>
+        <div class="app-item" onclick="openApp('gallery')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#667eea,#764ba2)">🖼️</div>
+          <span class="app-label">Galería</span>
+        </div>
+        <div class="app-item" onclick="openApp('gmail')">
+          <div class="app-icon" style="background:#ea4335">📧<span class="badge">3</span></div>
+          <span class="app-label">Gmail</span>
+        </div>
+        <div class="app-item" onclick="openApp('life360')">
+          <div class="app-icon" style="background:var(--accent)">📍<span class="badge" style="background:#ff9500">!</span></div>
+          <span class="app-label">Life360</span>
+        </div>
+        <div class="app-item">
+          <div class="app-icon" style="background:#ff9500">📸</div>
+          <span class="app-label">Cámara</span>
+        </div>
+        <div class="app-item">
+          <div class="app-icon" style="background:#34c759">📋</div>
+          <span class="app-label">Notas</span>
+        </div>
+        <div class="app-item">
+          <div class="app-icon" style="background:#5856d6">🗓️</div>
+          <span class="app-label">Calendario</span>
+        </div>
+        <div class="app-item">
+          <div class="app-icon" style="background:#ff3b30">☁️</div>
+          <span class="app-label">Clima</span>
+        </div>
+        <div class="app-item">
+          <div class="app-icon" style="background:#636366">⚙️</div>
+          <span class="app-label">Ajustes</span>
+        </div>
+      </div>
+      <div class="dock">
+        <div class="app-item" onclick="openApp('messages')"><div class="app-icon" style="background:#25d366">💬</div></div>
+        <div class="app-item"><div class="app-icon" style="background:#ff3b30">📞</div></div>
+        <div class="app-item" onclick="openApp('internet')"><div class="app-icon" style="background:var(--accent)">🌐</div></div>
+        <div class="app-item" onclick="openApp('gallery')"><div class="app-icon" style="background:linear-gradient(135deg,#667eea,#764ba2)">🖼️</div></div>
+      </div>
+      <div class="home-bar-row"><div class="home-bar"></div></div>
+    </div>
+
+    <!-- ==========================================
+         APP: MENSAJES SAMSUNG
+         PERSONALIZAR: los .msg-row son conversaciones
+         ========================================== -->
+    <div class="app-screen samsung-messages" id="app-messages">
+      <button class="back-btn" onclick="closeApp('messages')">← Inicio</button>
+      <div class="msg-header">
+        <h2>Mensajes</h2>
+        <div class="msg-search">🔍 Buscar</div>
+      </div>
+      <div class="msg-list">
+        <!-- PERSONALIZAR: cada .msg-row es un chat. Copia el bloque para añadir más -->
+        <div class="msg-row" onclick="openChat('bruce')">
+          <div class="msg-avatar" style="background:#2c3e50">BW</div>
+          <div class="msg-info">
+            <div class="msg-name">Bruce Wayne</div>
+            <div class="msg-preview">Necesito que estés en Gotham esta noche.</div>
+          </div>
+          <div class="msg-meta"><div class="msg-time">9:38</div><div class="unread-dot"></div></div>
+        </div>
+        <div class="msg-row" onclick="openChat('jason')">
+          <div class="msg-avatar" style="background:#c0392b">JT</div>
+          <div class="msg-info">
+            <div class="msg-name">Jason Todd 🔫</div>
+            <div class="msg-preview">Eso NUNCA pasó, deja de contarlo</div>
+          </div>
+          <div class="msg-meta"><div class="msg-time">Ayer</div></div>
+        </div>
+        <div class="msg-row" onclick="openChat('tim')">
+          <div class="msg-avatar" style="background:#2980b9">TD</div>
+          <div class="msg-info">
+            <div class="msg-name">Tim Drake ☕</div>
+            <div class="msg-preview">¿Puedes cubrirme el martes? tengo un examen</div>
+          </div>
+          <div class="msg-meta"><div class="msg-time">Lun</div><div class="unread-dot"></div></div>
+        </div>
+        <div class="msg-row" onclick="openChat('barbara')">
+          <div class="msg-avatar" style="background:#8e44ad">BG</div>
+          <div class="msg-info">
+            <div class="msg-name">Barbara Gordon 💻</div>
+            <div class="msg-preview">Ya te mandé el archivo, revisa tu correo</div>
+          </div>
+          <div class="msg-meta"><div class="msg-time">Dom</div></div>
+        </div>
+        <div class="msg-row" onclick="openChat('wally')">
+          <div class="msg-avatar" style="background:#e67e22">WW</div>
+          <div class="msg-info">
+            <div class="msg-name">Wally West ⚡</div>
+            <div class="msg-preview">DUDE. ¿viste el partido anoche???</div>
+          </div>
+          <div class="msg-meta"><div class="msg-time">Sáb</div></div>
+        </div>
+        <div class="msg-row" onclick="openChat('kori')">
+          <div class="msg-avatar" style="background:#f39c12">KA</div>
+          <div class="msg-info">
+            <div class="msg-name">Koriand'r ☀️</div>
+            <div class="msg-preview">Llegaré tarde al aeropuerto, no te preocupes</div>
+          </div>
+          <div class="msg-meta"><div class="msg-time">Vie</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         CHATS INDIVIDUALES
+         PERSONALIZAR: .b-in = recibido, .b-out = enviado
+         ========================================== -->
+
+    <!-- Chat: Bruce -->
+    <div class="app-screen chat-screen" id="chat-bruce">
+      <div class="chat-header">
+        <span class="chat-back" onclick="closeChat('bruce')">←</span>
+        <div class="chat-avatar-sm" style="background:#2c3e50">BW</div>
+        <div><div class="chat-name">Bruce Wayne</div><div class="chat-status-text">Visto hace 2 min</div></div>
+      </div>
+      <div class="chat-msgs">
+        <!-- PERSONALIZAR: mensajes del chat -->
+        <div class="bubble b-in">Necesito que estés en Gotham esta noche. Hay movimiento en el puerto.</div>
+        <div class="b-time left">9:38</div>
+        <div class="bubble b-out">Bruce, hoy tenía PLANES. Planes de persona normal.</div>
+        <div class="b-time right">9:39</div>
+        <div class="bubble b-in">Los planes pueden esperar.</div>
+        <div class="b-time left">9:39</div>
+        <div class="bubble b-out">Eso lo dices tú, que no tienes vida social.</div>
+        <div class="b-time right">9:40</div>
+        <div class="bubble b-in">Voy a fingir que no leí eso. ¿A qué hora llegas?</div>
+        <div class="b-time left">9:40</div>
+        <div class="bubble b-out">...a las 11. Pero le debes una disculpa a mi paella.</div>
+        <div class="b-time right">9:41</div>
+      </div>
+      <div class="chat-input-bar">
+        <div class="chat-input-fake">Mensaje</div>
+        <div class="send-btn">➤</div>
+      </div>
+    </div>
+
+    <!-- Chat: Jason -->
+    <div class="app-screen chat-screen" id="chat-jason">
+      <div class="chat-header">
+        <span class="chat-back" onclick="closeChat('jason')">←</span>
+        <div class="chat-avatar-sm" style="background:#c0392b">JT</div>
+        <div><div class="chat-name">Jason Todd 🔫</div><div class="chat-status-text">Visto ayer a las 11:47 pm</div></div>
+      </div>
+      <div class="chat-msgs">
+        <div class="bubble b-out">Jason. Estás en Life360. Sé que estás despierto.</div>
+        <div class="b-time right">11:20 pm</div>
+        <div class="bubble b-out">Jaaaason</div>
+        <div class="b-time right">11:32 pm</div>
+        <div class="bubble b-in">Qué.</div>
+        <div class="b-time left">11:44 pm</div>
+        <div class="bubble b-out">¿Recuerdas cuando yo te salvé en Qurac y te cargué 3 kilómetros?</div>
+        <div class="b-time right">11:44 pm</div>
+        <div class="bubble b-in">Eso NUNCA pasó, deja de contarlo</div>
+        <div class="b-time left">11:47 pm</div>
+        <div class="bubble b-out">Pasó. Tengo fotos.</div>
+        <div class="b-time right">11:48 pm</div>
+        <div style="font-size:11px;color:#bbb;text-align:center;padding:4px 0">Jason dejó de escribir</div>
+      </div>
+      <div class="chat-input-bar">
+        <div class="chat-input-fake">Mensaje</div>
+        <div class="send-btn">➤</div>
+      </div>
+    </div>
+
+    <!-- Chat: Tim -->
+    <div class="app-screen chat-screen" id="chat-tim">
+      <div class="chat-header">
+        <span class="chat-back" onclick="closeChat('tim')">←</span>
+        <div class="chat-avatar-sm" style="background:#2980b9">TD</div>
+        <div><div class="chat-name">Tim Drake ☕</div><div class="chat-status-text" style="color:#4caf50">En línea</div></div>
+      </div>
+      <div class="chat-msgs">
+        <div class="bubble b-in">¿Puedes cubrirme el martes?</div>
+        <div class="b-time left">Lun 9:12</div>
+        <div class="bubble b-in">Tengo un examen de cálculo y el semestre ya está muy complicado</div>
+        <div class="b-time left">Lun 9:12</div>
+        <div class="bubble b-out">Tim. Llevas 3 días sin dormir según Life360.</div>
+        <div class="b-time right">Lun 9:15</div>
+        <div class="bubble b-out">El martes te cubro pero DUERME.</div>
+        <div class="b-time right">Lun 9:15</div>
+        <div class="bubble b-in">El sueño es una construcción social</div>
+        <div class="b-time left">Lun 9:16</div>
+        <div class="bubble b-out">Tim.</div>
+        <div class="b-time right">Lun 9:16</div>
+        <div class="bubble b-in">...ok sí me duermo. Gracias Dick 🥺</div>
+        <div class="b-time left">Lun 9:18</div>
+      </div>
+      <div class="chat-input-bar">
+        <div class="chat-input-fake">Mensaje</div>
+        <div class="send-btn">➤</div>
+      </div>
+    </div>
+
+    <!-- Chat: Barbara -->
+    <div class="app-screen chat-screen" id="chat-barbara">
+      <div class="chat-header">
+        <span class="chat-back" onclick="closeChat('barbara')">←</span>
+        <div class="chat-avatar-sm" style="background:#8e44ad">BG</div>
+        <div><div class="chat-name">Barbara Gordon 💻</div><div class="chat-status-text">Visto Dom 3:41 pm</div></div>
+      </div>
+      <div class="chat-msgs">
+        <div class="bubble b-out">Babs, ¿tienes el informe del Escuadrón Falcone?</div>
+        <div class="b-time right">Dom 3:35</div>
+        <div class="bubble b-in">Ya te mandé el archivo, revisa tu correo.</div>
+        <div class="b-time left">Dom 3:41</div>
+        <div class="bubble b-in">Y Dick.</div>
+        <div class="b-time left">Dom 3:41</div>
+        <div class="bubble b-in">Deja de usar tu correo personal para cosas de trabajo.</div>
+        <div class="b-time left">Dom 3:41</div>
+        <div class="bubble b-out">tengo un correo de trabajo??</div>
+        <div class="b-time right">Dom 3:45</div>
+        <div class="bubble b-in">Dios. Sí. Nightwing@wayneenterprises.com</div>
+        <div class="b-time left">Dom 3:46</div>
+        <div class="bubble b-out">eso es lo más genial que he oído en mi vida</div>
+        <div class="b-time right">Dom 3:46</div>
+      </div>
+      <div class="chat-input-bar">
+        <div class="chat-input-fake">Mensaje</div>
+        <div class="send-btn">➤</div>
+      </div>
+    </div>
+
+    <!-- Chat: Wally -->
+    <div class="app-screen chat-screen" id="chat-wally">
+      <div class="chat-header">
+        <span class="chat-back" onclick="closeChat('wally')">←</span>
+        <div class="chat-avatar-sm" style="background:#e67e22">WW</div>
+        <div><div class="chat-name">Wally West ⚡</div><div class="chat-status-text" style="color:#4caf50">En línea</div></div>
+      </div>
+      <div class="chat-msgs">
+        <div class="bubble b-in">DUDE. ¿viste el partido anoche???</div>
+        <div class="b-time left">Sáb 10:58</div>
+        <div class="bubble b-out">No, tuve que trabajar 😭</div>
+        <div class="b-time right">Sáb 11:02</div>
+        <div class="bubble b-in">¿"trabajar"? 👀</div>
+        <div class="b-time left">Sáb 11:02</div>
+        <div class="bubble b-out">Trabajar trabajar. Cosas de policía.</div>
+        <div class="b-time right">Sáb 11:03</div>
+        <div class="bubble b-in">Ajá. "Cosas de policía". Claro.</div>
+        <div class="b-time left">Sáb 11:03</div>
+        <div class="bubble b-in">Oye el Gotham FC ganó 3-1 btw</div>
+        <div class="b-time left">Sáb 11:04</div>
+        <div class="bubble b-out">NO. SIN SPOILERS WALLY</div>
+        <div class="b-time right">Sáb 11:04</div>
+      </div>
+      <div class="chat-input-bar">
+        <div class="chat-input-fake">Mensaje</div>
+        <div class="send-btn">➤</div>
+      </div>
+    </div>
+
+    <!-- Chat: Koriand'r -->
+    <div class="app-screen chat-screen" id="chat-kori">
+      <div class="chat-header">
+        <span class="chat-back" onclick="closeChat('kori')">←</span>
+        <div class="chat-avatar-sm" style="background:#f39c12">KA</div>
+        <div><div class="chat-name">Koriand'r ☀️</div><div class="chat-status-text" style="color:#4caf50">En línea</div></div>
+      </div>
+      <div class="chat-msgs">
+        <div class="bubble b-out">¿Ya llegaste al aeropuerto?</div>
+        <div class="b-time right">Vie 4:15</div>
+        <div class="bubble b-in">Llegaré tarde al aeropuerto, no te preocupes.</div>
+        <div class="b-time left">Vie 4:22</div>
+        <div class="bubble b-in">Hay un problema menor con la aduana.</div>
+        <div class="b-time left">Vie 4:22</div>
+        <div class="bubble b-out">Kori. ¿"Menor" como menor-menor o menor como la última vez?</div>
+        <div class="b-time right">Vie 4:23</div>
+        <div class="bubble b-in">La última vez fue un malentendido cultural.</div>
+        <div class="b-time left">Vie 4:25</div>
+        <div class="bubble b-out">Dijiste que el agente "olía a deshonra"</div>
+        <div class="b-time right">Vie 4:25</div>
+        <div class="bubble b-in">Y lo decía con cariño. Los humanos son muy sensibles.</div>
+        <div class="b-time left">Vie 4:26</div>
+        <div class="bubble b-out">Voy para allá. No inicies ningún conflicto diplomático.</div>
+        <div class="b-time right">Vie 4:27</div>
+      </div>
+      <div class="chat-input-bar">
+        <div class="chat-input-fake">Mensaje</div>
+        <div class="send-btn">➤</div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         APP: INSTAGRAM
+         PERSONALIZAR: stories, posts, usuario
+         ========================================== -->
+    <div class="app-screen instagram-app" id="app-instagram">
+      <button class="back-btn" onclick="closeApp('instagram')">← Inicio</button>
+      <div class="ig-header">
+        <div class="ig-logo">Instagram</div>
+        <div class="ig-actions"><span>💬</span><span>❤️</span></div>
+      </div>
+      <div class="ig-stories">
+        <!-- PERSONALIZAR: stories - copia .story-wrap para añadir más -->
+        <div class="story-wrap">
+          <div class="story-ring" style="background:#ccc;padding:2px">
+            <div class="story-avatar-circle" style="background:var(--accent);color:white;font-size:10px;font-weight:700">TÚ</div>
+          </div>
+          <span class="story-label">Tu historia</span>
+        </div>
+        <div class="story-wrap">
+          <div class="story-ring"><div class="story-avatar-circle">🦇</div></div>
+          <span class="story-label">gotham_bats</span>
+        </div>
+        <div class="story-wrap">
+          <div class="story-ring"><div class="story-avatar-circle">⚡</div></div>
+          <span class="story-label">w_west_official</span>
+        </div>
+        <div class="story-wrap">
+          <div class="story-ring seen"><div class="story-avatar-circle">☕</div></div>
+          <span class="story-label">timdrake</span>
+        </div>
+        <div class="story-wrap">
+          <div class="story-ring"><div class="story-avatar-circle">🔥</div></div>
+          <span class="story-label">roywrites</span>
+        </div>
+      </div>
+      <div class="ig-scroll">
+        <!-- PERSONALIZAR: posts - copia el .ig-post para añadir más publicaciones -->
+        <div class="ig-post">
+          <div class="ig-post-header">
+            <div class="ig-post-ph" style="background:var(--accent)">DG</div>
+            <div style="flex:1;margin-left:10px">
+              <div style="font-size:13px;font-weight:600">d_grayson</div><!-- PERSONALIZAR: usuario -->
+              <div style="font-size:11px;color:#999">Blüdhaven, NJ</div><!-- PERSONALIZAR: ubicación -->
+            </div>
+            <span style="font-size:18px;color:#111">···</span>
+          </div>
+          <!-- PERSONALIZAR: imagen del post (aquí va un emoji/color de fondo, o una URL de imagen) -->
+          <div class="ig-post-img" style="background:linear-gradient(135deg,#1a3a6e,#0a1628)">
+            <span style="font-size:13px;color:rgba(255,255,255,0.6);text-align:center;padding:20px">📸 Vista nocturna desde el Edificio Callahan</span>
+          </div>
+          <div class="ig-post-actions"><span>🤍</span><span>💬</span><span>↗️</span><span style="margin-left:auto">🔖</span></div>
+          <div class="ig-likes">1,247 me gusta</div>
+          <div class="ig-caption">
+            <strong>d_grayson</strong> Las vistas desde este edificio son increíbles. Definitivamente NO estoy aquí por ninguna razón de vigilancia. Solo... aprecio la arquitectura. 🏙️<!-- PERSONALIZAR: pie de foto -->
+            <br><span style="color:#999;font-size:11px">Ver los 89 comentarios</span>
+          </div>
+          <div style="padding:0 12px 10px;font-size:11px;color:#aaa">hace 3 horas</div>
+        </div>
+        <div class="ig-post">
+          <div class="ig-post-header">
+            <div class="ig-post-ph" style="background:var(--accent)">DG</div>
+            <div style="flex:1;margin-left:10px"><div style="font-size:13px;font-weight:600">d_grayson</div></div>
+            <span style="font-size:18px;color:#111">···</span>
+          </div>
+          <div class="ig-post-img" style="background:linear-gradient(135deg,#c62828,#e53935)">
+            <span style="font-size:13px;color:rgba(255,255,255,0.8);text-align:center;padding:20px">🤸 Clase de acrobacias. "Calentamiento" dicen.</span>
+          </div>
+          <div class="ig-post-actions"><span>❤️</span><span>💬</span><span>↗️</span><span style="margin-left:auto">🔖</span></div>
+          <div class="ig-likes">3,891 me gusta</div>
+          <div class="ig-caption">
+            <strong>d_grayson</strong> El instructor dijo que tenía "talento natural". No sabe nada. 🤸‍♂️
+            <br><span style="color:var(--accent);font-size:11px">#bludhaven #gym #acrobatics</span>
+          </div>
+          <div style="padding:0 12px 10px;font-size:11px;color:#aaa">hace 2 días</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         APP: SPOTIFY
+         PERSONALIZAR: canción actual, playlists
+         ========================================== -->
+    <div class="app-screen spotify-app" id="app-spotify">
+      <button class="back-btn white" onclick="closeApp('spotify')">← Inicio</button>
+      <div class="sp-topbar">
+        <h2>Buenas noches, Dick</h2><!-- PERSONALIZAR: nombre -->
+        <span style="font-size:20px">⚙️</span>
+      </div>
+      <!-- PERSONALIZAR: canción que está sonando -->
+      <div class="sp-now">
+        <div class="sp-now-art" style="background:linear-gradient(135deg,#2d46b9,#1d3461)">🎸</div>
+        <div style="flex:1">
+          <div class="sp-now-title">Mr. Brightside</div><!-- PERSONALIZAR: título -->
+          <div class="sp-now-artist">The Killers</div><!-- PERSONALIZAR: artista -->
+        </div>
+        <div class="sp-play">▶</div>
+      </div>
+      <div class="sp-scroll">
+        <div class="sp-section">
+          <h3>Tus playlists</h3>
+          <!-- PERSONALIZAR: playlists - copia .sp-row para añadir más -->
+          <div class="sp-row">
+            <div class="sp-art-sm" style="background:#1565c0">🌙</div>
+            <div><div class="sp-row-title">Patrulla nocturna</div><div class="sp-row-sub">47 canciones</div></div>
+          </div>
+          <div class="sp-row">
+            <div class="sp-art-sm" style="background:#6a1b9a">🎪</div>
+            <div><div class="sp-row-title">Haly's Circus Nostalgia 🎪</div><div class="sp-row-sub">23 canciones</div></div>
+          </div>
+          <div class="sp-row">
+            <div class="sp-art-sm" style="background:#bf360c">🔥</div>
+            <div><div class="sp-row-title">ENTRENAMIENTO MODO BESTIA</div><div class="sp-row-sub">31 canciones</div></div>
+          </div>
+          <div class="sp-row">
+            <div class="sp-art-sm" style="background:#1b5e20">😔</div>
+            <div><div class="sp-row-title">no estoy bien pero está ok</div><div class="sp-row-sub">18 canciones</div></div>
+          </div>
+          <div class="sp-row">
+            <div class="sp-art-sm" style="background:#e65100">🕺</div>
+            <div><div class="sp-row-title">Guilty pleasures (PRIVADA)</div><div class="sp-row-sub">67 canciones</div></div>
+          </div>
+        </div>
+        <div class="sp-section">
+          <h3>Escuchado recientemente</h3>
+          <div class="sp-row">
+            <div class="sp-art-sm" style="background:#37474f">🎭</div>
+            <div><div class="sp-row-title">Under Pressure</div><div class="sp-row-sub">Queen & David Bowie</div></div>
+          </div>
+          <div class="sp-row">
+            <div class="sp-art-sm" style="background:#880e4f">💜</div>
+            <div><div class="sp-row-title">drivers license</div><div class="sp-row-sub">Olivia Rodrigo</div></div>
+          </div>
+          <div class="sp-row">
+            <div class="sp-art-sm" style="background:#4a148c">🎵</div>
+            <div><div class="sp-row-title">Eye of the Tiger</div><div class="sp-row-sub">Survivor</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         APP: SAMSUNG INTERNET (historial)
+         PERSONALIZAR: entradas del historial
+         ========================================== -->
+    <div class="app-screen internet-app" id="app-internet">
+      <button class="back-btn" onclick="closeApp('internet')">← Inicio</button>
+      <div class="inet-topbar">
+        <div class="inet-brand">Samsung Internet</div>
+        <div class="inet-bar">🔒 search.samsung.com</div>
+      </div>
+      <div class="inet-scroll">
+        <div class="inet-section-label">Hoy</div>
+        <!-- PERSONALIZAR: entradas del historial - copia .hist-row para añadir más -->
+        <div class="hist-row">
+          <div class="hist-favicon" style="background:#4285f4;color:white">G</div>
+          <div class="hist-text"><div class="hist-title">cómo hablar con alguien que no quiere hablar contigo</div><div class="hist-url">google.com</div></div>
+          <div class="hist-time">9:21</div>
+        </div>
+        <div class="hist-row">
+          <div class="hist-favicon" style="background:#e53935;color:white">▶</div>
+          <div class="hist-text"><div class="hist-title">Jason Todd best moments compilation 40 min</div><div class="hist-url">youtube.com</div></div>
+          <div class="hist-time">8:55</div>
+        </div>
+        <div class="hist-row">
+          <div class="hist-favicon" style="background:#1565c0;color:white;font-size:11px">W</div>
+          <div class="hist-text"><div class="hist-title">Síndrome de hermano mayor - Wikipedia</div><div class="hist-url">es.wikipedia.org</div></div>
+          <div class="hist-time">8:43</div>
+        </div>
+        <div class="inet-section-label">Ayer</div>
+        <div class="hist-row">
+          <div class="hist-favicon" style="background:#4285f4;color:white">G</div>
+          <div class="hist-text"><div class="hist-title">recetas fáciles para hombres que no saben cocinar</div><div class="hist-url">google.com</div></div>
+          <div class="hist-time">11:30</div>
+        </div>
+        <div class="hist-row">
+          <div class="hist-favicon" style="background:var(--accent);color:white;font-size:11px">B</div>
+          <div class="hist-text"><div class="hist-title">Blüdhaven PD – Portal de Empleados</div><div class="hist-url">bludhaven-pd.gov</div></div>
+          <div class="hist-time">9:14</div>
+        </div>
+        <div class="hist-row">
+          <div class="hist-favicon" style="background:#4285f4;color:white">G</div>
+          <div class="hist-text"><div class="hist-title">¿qué es el apego ansioso y cómo manejarlo?</div><div class="hist-url">google.com</div></div>
+          <div class="hist-time">2:07</div>
+        </div>
+        <div class="inet-section-label">Esta semana</div>
+        <div class="hist-row">
+          <div class="hist-favicon" style="background:#ff6f00;color:white;font-size:11px">Am</div>
+          <div class="hist-text"><div class="hist-title">Trajes de acrobacia profesional talla M - Amazon</div><div class="hist-url">amazon.com</div></div>
+          <div class="hist-time">Mar</div>
+        </div>
+        <div class="hist-row">
+          <div class="hist-favicon" style="background:#4285f4;color:white">G</div>
+          <div class="hist-text"><div class="hist-title">cómo decirle a tu mentor que está equivocado sin que te desherede</div><div class="hist-url">google.com</div></div>
+          <div class="hist-time">Lun</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         APP: GALERÍA
+         PERSONALIZAR: celdas de fotos
+         ========================================== -->
+    <div class="app-screen gallery-app" id="app-gallery">
+      <button class="back-btn white" onclick="closeApp('gallery')">← Inicio</button>
+      <div class="gal-topbar">
+        <h2>Galería</h2>
+        <div class="gal-tabs">
+          <div class="gal-tab active">Fotos</div>
+          <div class="gal-tab">Álbumes</div>
+          <div class="gal-tab">Historias</div>
+        </div>
+      </div>
+      <div class="gal-grid">
+        <!-- PERSONALIZAR: cada .gal-cell es una foto. Cambia el background-color y el emoji/label -->
+        <div class="gal-cell" style="background:linear-gradient(135deg,#0a1628,#1a3a6e)">🏙️<div class="gal-label">Blüdhaven - 23 ago</div></div>
+        <div class="gal-cell" style="background:linear-gradient(135deg,#1a237e,#283593)">🌃<div class="gal-label">Patrulla nocturna</div></div>
+        <div class="gal-cell" style="background:linear-gradient(135deg,#b71c1c,#c62828)">🤸<div class="gal-label">Entreno - ago</div></div>
+        <div class="gal-cell" style="background:linear-gradient(135deg,#004d40,#00695c)">🌊<div class="gal-label">Costa - ago</div></div>
+        <div class="gal-cell" style="background:linear-gradient(135deg,#37474f,#455a64)">🦇<div class="gal-label">Gotham de noche</div></div>
+        <div class="gal-cell" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">🎪<div class="gal-label">Haly's reunion</div></div>
+        <div class="gal-cell" style="background:linear-gradient(135deg,#e65100,#ef6c00)">🥘<div class="gal-label">Paella fallida</div></div>
+        <div class="gal-cell" style="background:linear-gradient(135deg,#1b5e20,#2e7d32)">🌿<div class="gal-label">Parque - ago</div></div>
+        <div class="gal-cell" style="background:linear-gradient(135deg,#880e4f,#ad1457)">📸<div class="gal-label">Con Kori</div></div>
+        <div class="gal-cell" style="background:linear-gradient(135deg,#263238,#37474f)">🌉<div class="gal-label">Puente - noche</div></div>
+        <div class="gal-cell" style="background:linear-gradient(135deg,#bf360c,#d84315)">🏋️<div class="gal-label">Gym con Wally</div></div>
+        <div class="gal-cell" style="background:linear-gradient(135deg,#01579b,#0277bd)">🚔<div class="gal-label">BPDF - trabajo</div></div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         APP: LIFE360
+         PERSONALIZAR: miembros del círculo y sus ubicaciones
+         ========================================== -->
+    <div class="app-screen life360-app" id="app-life360">
+      <button class="back-btn white" onclick="closeApp('life360')">← Inicio</button>
+      <div class="l360-topbar">
+        <h2>Life360</h2>
+        <p>Familia Wayne · 5 miembros</p><!-- PERSONALIZAR: nombre del círculo -->
+      </div>
+      <!-- PERSONALIZAR: pines en el mapa (top/left = posición, %) -->
+      <div class="l360-map">
+        <div class="map-grid"></div>
+        <div class="l360-pin" style="top:30%;left:42%">
+          <div class="pin-avatar" style="background:#2c3e50">BW</div>
+          <div class="pin-name">Bruce</div>
+        </div>
+        <div class="l360-pin" style="top:48%;left:54%">
+          <div class="pin-avatar" style="background:var(--accent)">DG</div>
+          <div class="pin-name">Dick ★</div>
+        </div>
+        <div class="l360-pin" style="top:18%;left:68%">
+          <div class="pin-avatar" style="background:#c0392b">JT</div>
+          <div class="pin-name">Jason</div>
+        </div>
+        <div class="l360-pin" style="top:62%;left:28%">
+          <div class="pin-avatar" style="background:#2980b9">TD</div>
+          <div class="pin-name">Tim</div>
+        </div>
+        <div class="l360-pin" style="top:40%;left:18%">
+          <div class="pin-avatar" style="background:#27ae60">DA</div>
+          <div class="pin-name">Damian</div>
+        </div>
+      </div>
+      <!-- PERSONALIZAR: lista de miembros con estado -->
+      <div class="l360-list">
+        <div class="l360-row">
+          <div class="l360-avatar" style="background:#2c3e50">BW</div>
+          <div style="flex:1"><div class="l360-name">Bruce Wayne</div><div class="l360-loc">🏠 Wayne Manor, Gotham</div></div>
+          <div style="text-align:right"><div class="status-dot" style="background:#4caf50;margin-left:auto;margin-bottom:3px"></div><div class="l360-time">hace 2 min</div></div>
+        </div>
+        <div class="l360-row">
+          <div class="l360-avatar" style="background:#c0392b">JT</div>
+          <div style="flex:1"><div class="l360-name">Jason Todd</div><div class="l360-loc">⚠️ Fuera de zona segura</div></div>
+          <div style="text-align:right"><div class="status-dot" style="background:#ff9800;margin-left:auto;margin-bottom:3px"></div><div class="l360-time">hace 12 min</div></div>
+        </div>
+        <div class="l360-row">
+          <div class="l360-avatar" style="background:#2980b9">TD</div>
+          <div style="flex:1"><div class="l360-name">Tim Drake</div><div class="l360-loc">📍 Universidad de Gotham</div></div>
+          <div style="text-align:right"><div class="status-dot" style="background:#4caf50;margin-left:auto;margin-bottom:3px"></div><div class="l360-time">hace 5 min</div></div>
+        </div>
+        <div class="l360-row">
+          <div class="l360-avatar" style="background:#27ae60">DA</div>
+          <div style="flex:1"><div class="l360-name">Damian Al Ghul-Wayne</div><div class="l360-loc">📵 Ubicación desactivada</div></div>
+          <div style="text-align:right"><div class="status-dot" style="background:#9e9e9e;margin-left:auto;margin-bottom:3px"></div><div class="l360-time">hace 3h</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         APP: GMAIL
+         PERSONALIZAR: correos recibidos
+         ========================================== -->
+    <div class="app-screen gmail-app" id="app-gmail">
+      <button class="back-btn" onclick="closeApp('gmail')">← Inicio</button>
+      <div class="gm-topbar">
+        <div><h2>Recibidos</h2><div class="gm-label">Principal</div></div>
+        <span style="font-size:20px">🔍</span>
+      </div>
+      <div class="gm-scroll">
+        <!-- PERSONALIZAR: correos - copia .gm-row para añadir más. Quita .read del .gm-sender para no leídos -->
+        <div class="gm-row">
+          <div class="gm-avatar" style="background:#8e44ad">BG</div>
+          <div class="gm-info">
+            <div class="gm-sender">Barbara Gordon</div>
+            <div class="gm-subject">RE: Informe Escuadrón Falcone</div>
+            <div class="gm-snippet">Aquí está el archivo que pediste. Y usa tu correo de trabajo...</div>
+          </div>
+          <div class="gm-time">3:41 pm</div>
+        </div>
+        <div class="gm-row">
+          <div class="gm-avatar" style="background:#ea4335">!</div>
+          <div class="gm-info">
+            <div class="gm-sender">noreply@life360.com</div>
+            <div class="gm-subject">Alerta: Jason Todd salió de zona segura</div>
+            <div class="gm-snippet">Un miembro de tu círculo ha salido del área designada...</div>
+          </div>
+          <div class="gm-time">9:29 am</div>
+        </div>
+        <div class="gm-row">
+          <div class="gm-avatar" style="background:#2c3e50">WE</div>
+          <div class="gm-info">
+            <div class="gm-sender read">Wayne Enterprises RH</div>
+            <div class="gm-subject" style="font-weight:400;color:#666">Recordatorio: Reunión anual accionistas</div>
+            <div class="gm-snippet">Estimado Sr. Grayson, le recordamos que la reunión...</div>
+          </div>
+          <div class="gm-time">Lun</div>
+        </div>
+        <div class="gm-row">
+          <div class="gm-avatar" style="background:#1db954">SP</div>
+          <div class="gm-info">
+            <div class="gm-sender read">Spotify</div>
+            <div class="gm-subject" style="font-weight:400;color:#666">Tu resumen de la semana está listo</div>
+            <div class="gm-snippet">Esta semana escuchaste a The Killers 47 veces...</div>
+          </div>
+          <div class="gm-time">Dom</div>
+        </div>
+        <div class="gm-row">
+          <div class="gm-avatar" style="background:#e67e22">BPD</div>
+          <div class="gm-info">
+            <div class="gm-sender read">Blüdhaven PD - RRHH</div>
+            <div class="gm-subject" style="font-weight:400;color:#666">Evaluación de desempeño – Grayson, R.</div>
+            <div class="gm-snippet">Detective Grayson, adjuntamos su evaluación trimestral...</div>
+          </div>
+          <div class="gm-time">Sáb</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screen -->
+</div><!-- /phone -->
+</div><!-- /wrap -->
+
+<script>
+function unlockPhone() {
+  document.getElementById('lockscreen').classList.add('hidden');
+}
+function openApp(name) {
+  var el = document.getElementById('app-' + name);
+  if (el) el.classList.add('active');
+}
+function closeApp(name) {
+  var el = document.getElementById('app-' + name);
+  if (el) el.classList.remove('active');
+}
+function openChat(name) {
+  closeApp('messages');
+  var el = document.getElementById('chat-' + name);
+  if (el) el.classList.add('active');
+}
+function closeChat(name) {
+  var el = document.getElementById('chat-' + name);
+  if (el) el.classList.remove('active');
+  openApp('messages');
+}
+</script>
+</body>
+</html>
